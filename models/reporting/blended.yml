@@ -1,1 +1,24 @@
 version: 2
+
+sources:
+      
+- name: gsheet_raw
+  schema: gsheet_raw
+  tables:
+    - name: appsflyer_insights
+      identifier: appsflyer_insights
+    
+- name: reporting
+  schema: reporting
+  tables:
+    - name: facebook_ad_performance
+      identifier: stardust_facebook_ad_performance
+
+    - name: facebook_campaign_performance
+      identifier: stardust_facebook_campaign_performance
+
+    - name: googleads_campaign_performance
+      identifier: stardust_googleads_campaign_performance
+
+    - name: tiktok_ad_performance
+      identifier: stardust_tiktok_ad_performance
