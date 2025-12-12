@@ -68,7 +68,7 @@ paid_data as
 
 paid_appsflyer_data as (
   SELECT 
-    channel, campaign_name, date::date, date_granularity, app,
+    channel, campaign_name, coalesce(campaign_id::varchar,'(not set)') as campaign_id, date::date, date_granularity, app,
     SUM(COALESCE(spend, 0)) AS spend,
     SUM(COALESCE(clicks, 0)) AS clicks,
     SUM(COALESCE(impressions, 0)) AS impressions,
@@ -79,12 +79,13 @@ paid_appsflyer_data as (
     SUM(COALESCE(trial_converted, 0)) AS trial_converted,
     SUM(COALESCE(trial_started, 0)) AS trial_started
   FROM paid_data FULL OUTER JOIN appsflyer_data USING(channel,date,date_granularity,campaign_name,app)
-  GROUP BY 1,2,3,4,5)
+  GROUP BY 1,2,3,4,5,6)
     
 SELECT 
     channel,
 	app,
     campaign_name,
+	campaign_id,
     date,
     date_granularity,
     spend,
