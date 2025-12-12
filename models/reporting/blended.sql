@@ -30,7 +30,7 @@ WITH appsflyer_data AS (
     ),
     
 paid_data as
-    (SELECT channel, campaign_id::varchar as campaign_id, campaign_name, date::date, date_granularity, COALESCE(SUM(spend),0) as spend, COALESCE(SUM(clicks),0) as clicks, 
+    (SELECT channel, campaign_id::varchar as campaign_id, campaign_name, date::date, date_granularity, app, COALESCE(SUM(spend),0) as spend, COALESCE(SUM(clicks),0) as clicks, 
         COALESCE(SUM(impressions),0) as impressions
     FROM
         (SELECT 'Meta' as channel, campaign_id, campaign_name, date, date_granularity, 
