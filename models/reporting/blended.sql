@@ -77,7 +77,7 @@ paid_appsflyer_data as (
     SUM(COALESCE(trial_converted, 0)) AS trial_converted,
     SUM(COALESCE(trial_started, 0)) AS trial_started
   FROM paid_data FULL OUTER JOIN appsflyer_data USING(channel,date,date_granularity,campaign_name,app)
-  GROUP BY 1,2,3,4)
+  GROUP BY 1,2,3,4,5)
     
 SELECT 
     channel,
