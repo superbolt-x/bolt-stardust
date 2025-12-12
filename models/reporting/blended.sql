@@ -20,6 +20,7 @@ WITH appsflyer_data AS (
             campaign_name,
             sum(installs) as installs, 
             sum(sessions) as sessions,
+			sum(revenue) as revenue,
             sum(rc_initial_purchase_users) as initial_purchase,
             sum(rc_trial_converted_users) as trial_converted,
             sum(rc_trial_started_users) as trial_started
@@ -73,6 +74,7 @@ paid_appsflyer_data as (
     SUM(COALESCE(impressions, 0)) AS impressions,
     SUM(COALESCE(installs, 0)) AS installs,
     SUM(COALESCE(sessions, 0)) AS sessions,
+	SUM(COALESCE(revenue, 0)) AS revenue,
     SUM(COALESCE(initial_purchase, 0)) AS initial_purchase,
     SUM(COALESCE(trial_converted, 0)) AS trial_converted,
     SUM(COALESCE(trial_started, 0)) AS trial_started
@@ -90,6 +92,7 @@ SELECT
     impressions,
     installs,
     sessions,
+	revenue,
     initial_purchase,
     trial_converted,
     trial_started
