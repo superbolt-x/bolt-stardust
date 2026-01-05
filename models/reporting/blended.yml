@@ -7,6 +7,12 @@ sources:
   tables:
     - name: appsflyer_insights
       identifier: appsflyer_insights
+
+- name: tiktok_raw
+  schema: tiktok_raw
+  tables:
+    - name: campaign_performance_report
+      identifier: campaign_performance_report
     
 - name: reporting
   schema: reporting
