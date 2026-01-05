@@ -51,15 +51,28 @@ paid_data as
             spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
         FROM {{ source('reporting','googleads_campaign_performance') }}
 		UNION ALL
-		SELECT 'Tiktok Ads' as channel, campaign_id, campaign_name, date, date_granularity, 
+		{% for granularity in date_granularity_list %}
+        SELECT 
+			'Tiktok Ads' as channel, campaign_id, campaign_name,
+            '{{granularity}}' as date_granularity,
+            date_trunc('{{granularity}}',stat_time_day) as date,
 			case 
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-			spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
-        FROM {{ source('reporting','tiktok_ad_performance') }}
+            COALESCE(SUM(spend),0) as spend, 
+			COALESCE(SUM(clicks),0) as clicks, 
+        	COALESCE(SUM(impressions),0) as impressions, 
+			COALESCE(SUM(skan_conversion),0) as installs, 
+			COALESCE(SUM(skan_start_trial),0) as trial_started, 
+			COALESCE(SUM(0),0) as trial_converted,
+			COALESCE(SUM(0),0) as initial_purchase
+        FROM {{ source('tiktok_raw','campaign_performance_report') }}
+        GROUP BY 1,2,3,4,5,6
+        {% if not loop.last %}UNION ALL{% endif %}
+        {% endfor %}
         )
     GROUP BY channel, campaign_id, campaign_name, date, date_granularity, app),
 
