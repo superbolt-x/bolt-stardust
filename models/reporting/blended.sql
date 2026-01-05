@@ -18,12 +18,8 @@ WITH appsflyer_data AS (
                 ELSE source
             END AS channel,
             campaign_name,
-            sum(installs) as installs, 
             sum(sessions) as sessions,
-			sum(revenue) as revenue,
-            sum(rc_initial_purchase_users) as initial_purchase,
-            sum(rc_trial_converted_users) as trial_converted,
-            sum(rc_trial_started_users) as trial_started
+			sum(revenue) as revenue
         FROM {{ source('gsheet_raw','appsflyer_insights') }}
         GROUP BY 1,2,3,4,5
         {% if not loop.last %}UNION ALL{% endif %}
@@ -32,7 +28,8 @@ WITH appsflyer_data AS (
     
 paid_data as
     (SELECT channel, campaign_id::varchar as campaign_id, campaign_name, date::date, date_granularity, app, COALESCE(SUM(spend),0) as spend, COALESCE(SUM(clicks),0) as clicks, 
-        COALESCE(SUM(impressions),0) as impressions
+        COALESCE(SUM(impressions),0) as impressions, COALESCE(SUM(app_install),0) as installs, COALESCE(SUM(trial_started),0) as trial_started, COALESCE(SUM(trial_converted),0) as trial_converted,
+		COALESCE(SUM(initial_purchase),0) as initial_purchase
     FROM
         (SELECT 'Meta' as channel, campaign_id, campaign_name, date, date_granularity, 
             case 
@@ -41,7 +38,7 @@ paid_data as
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-			spend, link_clicks as clicks, impressions
+			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
         FROM {{ source('reporting','facebook_ad_performance') }}
         UNION ALL
         SELECT 'Google Ads' as channel, campaign_id, campaign_name, date, date_granularity,
@@ -51,7 +48,7 @@ paid_data as
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-            spend, clicks, impressions
+            spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
         FROM {{ source('reporting','googleads_campaign_performance') }}
 		UNION ALL
 		SELECT 'Tiktok Ads' as channel, campaign_id, campaign_name, date, date_granularity, 
@@ -61,7 +58,7 @@ paid_data as
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-			spend, clicks, impressions
+			spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
         FROM {{ source('reporting','tiktok_ad_performance') }}
         )
     GROUP BY channel, campaign_id, campaign_name, date, date_granularity, app),
