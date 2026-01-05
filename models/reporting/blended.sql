@@ -54,8 +54,8 @@ paid_data as
 		{% for granularity in date_granularity_list %}
         SELECT 
 			'Tiktok Ads' as channel, campaign_id, campaign_name,
-            '{{granularity}}' as date_granularity,
             date_trunc('{{granularity}}',stat_time_day) as date,
+			'{{granularity}}' as date_granularity,
 			case 
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
