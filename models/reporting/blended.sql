@@ -9,7 +9,7 @@ WITH appsflyer_data AS (
         {% for granularity in date_granularity_list %}
         SELECT 
             '{{granularity}}' as date_granularity,
-            date_trunc('{{granularity}}',date) as date,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) as date,
 			app,
             CASE 
                 WHEN source = 'Facebook Ads' THEN 'Meta'
