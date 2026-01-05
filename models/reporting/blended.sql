@@ -9,7 +9,7 @@ WITH appsflyer_data AS (
         {% for granularity in date_granularity_list %}
         SELECT 
             '{{granularity}}' as date_granularity,
-            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) as date,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
 			app,
             CASE 
                 WHEN source = 'Facebook Ads' THEN 'Meta'
@@ -54,7 +54,7 @@ paid_data as
 		{% for granularity in date_granularity_list %}
         SELECT 
 			'Tiktok Ads' as channel, campaign_id, campaign_name,
-			case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',stat_time_day+1)-1 else date_trunc('{{granularity}}',stat_time_day) as date,
+			case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',stat_time_day+1)-1 else date_trunc('{{granularity}}',stat_time_day) end as date,
 			'{{granularity}}' as date_granularity,
 			case 
 				when campaign_name ~* '_ios_' then 'iOS'
