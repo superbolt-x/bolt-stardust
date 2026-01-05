@@ -39,7 +39,7 @@ paid_data as
 				else 'Other'
 			end as app,
 			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
-        FROM {{ source('reporting','facebook_ad_performance') }}
+        FROM {{ source('reporting','facebook_campaign_performance') }}
         UNION ALL
         SELECT 'Google Ads' as channel, campaign_id, campaign_name, date, date_granularity,
 			case 
