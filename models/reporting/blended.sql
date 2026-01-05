@@ -31,7 +31,7 @@ paid_data as
         COALESCE(SUM(impressions),0) as impressions, COALESCE(SUM(app_install),0) as installs, COALESCE(SUM(trial_started),0) as trial_started, COALESCE(SUM(trial_converted),0) as trial_converted,
 		COALESCE(SUM(initial_purchase),0) as initial_purchase
     FROM
-        (SELECT 'Meta' as channel, campaign_id, campaign_name, date, date_granularity, 
+        (SELECT 'Meta' as channel, campaign_id::varchar as campaign_id, campaign_name, date, date_granularity, 
             case 
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
@@ -41,7 +41,7 @@ paid_data as
 			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
         FROM {{ source('reporting','facebook_campaign_performance') }}
         UNION ALL
-        SELECT 'Google Ads' as channel, campaign_id, campaign_name, date, date_granularity,
+        SELECT 'Google Ads' as channel, campaign_id::varchar as campaign_id, campaign_name, date, date_granularity,
 			case 
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
@@ -53,7 +53,7 @@ paid_data as
 		UNION ALL
 		{% for granularity in date_granularity_list %}
         SELECT 
-			'Tiktok Ads' as channel, campaign_id, campaign_name,
+			'Tiktok Ads' as channel, campaign_id::varchar as campaign_id, campaign_name,
 			case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',stat_time_day+1)-1 else date_trunc('{{granularity}}',stat_time_day) end as date,
 			'{{granularity}}' as date_granularity,
 			case 
