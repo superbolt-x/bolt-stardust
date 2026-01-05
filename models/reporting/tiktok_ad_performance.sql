@@ -22,5 +22,9 @@ impressions,
 clicks,
 complete_payment as purchases,
 total_complete_payment_rate as revenue,
-web_event_add_to_cart as atc
+web_event_add_to_cart as atc,
+skan_conversion as app_install,
+0 as trial_started,
+0 as trial_converted,
+0 as initial_purchase
 FROM {{ ref('tiktok_performance_by_ad') }}
