@@ -20,9 +20,9 @@ WITH appsflyer_data AS (
             campaign_name,
             sum(sessions) as sessions,
 			sum(installs) as apps_installs,
-			sum(rc_trial_started_event) as apps_trial_started,
-			sum(rc_trial_converted_event) as apps_trial_converted,
-			sum(rc_initial_purchase_event) as apps_initial_purchase,
+			sum(rc_trial_started_users) as apps_trial_started,
+			sum(rc_trial_converted_users) as apps_trial_converted,
+			sum(rc_initial_purchase_users) as apps_initial_purchase,
 			sum(revenue) as revenue
         FROM {{ source('gsheet_raw','appsflyer_insights') }}
         GROUP BY 1,2,3,4,5
