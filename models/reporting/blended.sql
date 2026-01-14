@@ -19,7 +19,11 @@ WITH appsflyer_data AS (
             END AS channel,
             campaign_name,
             sum(sessions) as sessions,
-			sum(revenue) as revenue
+			sum(installs) as apps_installs,
+			sum(rc_trial_started_event) as apps_trial_started,
+			sum(rc_trial_converted_event) as apps_trial_converted,
+			sum(rc_initial_purchase_event) as apps_initial_purchase,
+			sum(revenue) as revenue,
         FROM {{ source('gsheet_raw','appsflyer_insights') }}
         GROUP BY 1,2,3,4,5
         {% if not loop.last %}UNION ALL{% endif %}
@@ -87,7 +91,11 @@ paid_appsflyer_data as (
 	SUM(COALESCE(revenue, 0)) AS revenue,
     SUM(COALESCE(initial_purchase, 0)) AS initial_purchase,
     SUM(COALESCE(trial_converted, 0)) AS trial_converted,
-    SUM(COALESCE(trial_started, 0)) AS trial_started
+    SUM(COALESCE(trial_started, 0)) AS trial_started,
+	SUM(COALESCE(apps_installs, 0)) AS apps_installs,
+    SUM(COALESCE(apps_initial_purchase, 0)) AS apps_initial_purchase,
+    SUM(COALESCE(apps_trial_converted, 0)) AS apps_trial_converted,
+    SUM(COALESCE(apps_trial_started, 0)) AS apps_trial_started
   FROM paid_data FULL OUTER JOIN appsflyer_data USING(channel,date,date_granularity,campaign_name,app)
   GROUP BY 1,2,3,4,5,6)
     
@@ -106,5 +114,9 @@ SELECT
 	revenue,
     initial_purchase,
     trial_converted,
-    trial_started
+    trial_started,
+	apps_installs,
+	apps_initial_purchase,
+	apps_trial_converted,
+	apps_trial_started
 FROM paid_appsflyer_data
