@@ -23,7 +23,7 @@ WITH appsflyer_data AS (
 			sum(rc_trial_started_event) as apps_trial_started,
 			sum(rc_trial_converted_event) as apps_trial_converted,
 			sum(rc_initial_purchase_event) as apps_initial_purchase,
-			sum(revenue) as revenue,
+			sum(revenue) as revenue
         FROM {{ source('gsheet_raw','appsflyer_insights') }}
         GROUP BY 1,2,3,4,5
         {% if not loop.last %}UNION ALL{% endif %}
