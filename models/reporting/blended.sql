@@ -23,7 +23,7 @@ WITH appsflyer_data AS (
 			sum(rc_trial_started_users) as apps_trial_started,
 			sum(rc_trial_converted_users) as apps_trial_converted,
 			sum(rc_initial_purchase_users) as apps_initial_purchase,
-			sum(revenue) as revenue
+			sum(revenue) as apps_revenue
         FROM {{ source('gsheet_raw','appsflyer_insights') }}
         GROUP BY 1,2,3,4,5
         {% if not loop.last %}UNION ALL{% endif %}
@@ -33,7 +33,7 @@ WITH appsflyer_data AS (
 paid_data as
     (SELECT channel, campaign_id::varchar as campaign_id, campaign_name, date::date, date_granularity, app, COALESCE(SUM(spend),0) as spend, COALESCE(SUM(clicks),0) as clicks, 
         COALESCE(SUM(impressions),0) as impressions, COALESCE(SUM(app_install),0) as installs, COALESCE(SUM(trial_started),0) as trial_started, COALESCE(SUM(trial_converted),0) as trial_converted,
-		COALESCE(SUM(initial_purchase),0) as initial_purchase
+		COALESCE(SUM(initial_purchase),0) as initial_purchase, COALESCE(SUM(trial_converted_value),0)+COALESCE(SUM(initial_purchase_value),0) as revenue
     FROM
         (SELECT 'Meta' as channel, campaign_id::varchar as campaign_id, campaign_name, date, date_granularity, 
             case 
@@ -42,7 +42,7 @@ paid_data as
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
+			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase, trial_converted_value, initial_purchase_value 
         FROM {{ source('reporting','facebook_campaign_performance') }}
         UNION ALL
         SELECT 'Google Ads' as channel, campaign_id::varchar as campaign_id, campaign_name, date, date_granularity,
@@ -52,7 +52,7 @@ paid_data as
 				when campaign_name ~* '_web_' then 'Web'
 				else 'Other'
 			end as app,
-            spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase 
+            spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase, trial_converted_value, initial_purchase_value  
         FROM {{ source('reporting','googleads_campaign_performance') }}
 		UNION ALL
 		{% for granularity in date_granularity_list %}
@@ -72,7 +72,9 @@ paid_data as
 			COALESCE(SUM(skan_conversion),0) as installs, 
 			COALESCE(SUM(skan_start_trial),0) as trial_started, 
 			COALESCE(SUM(0),0) as trial_converted,
-			COALESCE(SUM(0),0) as initial_purchase
+			COALESCE(SUM(0),0) as initial_purchase,
+			COALESCE(SUM(0),0) as trial_converted_value,
+			COALESCE(SUM(0),0) as initial_purchase_value
         FROM {{ source('tiktok_raw','campaign_performance_report') }}
         GROUP BY 1,2,3,4,5,6
         {% if not loop.last %}UNION ALL{% endif %}
@@ -89,6 +91,7 @@ paid_appsflyer_data as (
     SUM(COALESCE(installs, 0)) AS installs,
     SUM(COALESCE(sessions, 0)) AS sessions,
 	SUM(COALESCE(revenue, 0)) AS revenue,
+	SUM(COALESCE(apps_revenue, 0)) AS apps_revenue,
     SUM(COALESCE(initial_purchase, 0)) AS initial_purchase,
     SUM(COALESCE(trial_converted, 0)) AS trial_converted,
     SUM(COALESCE(trial_started, 0)) AS trial_started,
@@ -112,6 +115,7 @@ SELECT
     installs,
     sessions,
 	revenue,
+	apps_revenue,
     initial_purchase,
     trial_converted,
     trial_started,
