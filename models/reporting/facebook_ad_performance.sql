@@ -26,5 +26,7 @@ link_clicks,
 omni_app_install as app_install,
 "app_custom_event.rc_trial_started_event" as trial_started,
 "app_custom_event.rc_trial_converted_event" as trial_converted,
-"app_custom_event.rc_initial_purchase_event" as initial_purchase
+"app_custom_event.rc_initial_purchase_event" as initial_purchase,
+0 as trial_converted_value,
+0 as initial_purchase_value
 FROM {{ ref('facebook_performance_by_ad') }}
