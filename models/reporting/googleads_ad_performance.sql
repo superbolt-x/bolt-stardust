@@ -20,6 +20,8 @@ clicks,
 "rc_trial_started_via_firebaseios" as trial_started,
 "stardustprod5a598comstarduststardustappiosapp_store_subscription_convert" as trial_converted,
 "d2p_t2p_via_firebaseios" as initial_purchase,
+"stardustprod5a598comstarduststardustappiosapp_store_subscription_convert_value" as trial_converted_value,
+"d2p_t2p_via_firebaseios_value" as initial_purchase_value,
 conversions as purchases,
 conversions_value as revenue
 
