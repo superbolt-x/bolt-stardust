@@ -19,7 +19,7 @@ WITH appsflyer_data AS (
             END AS channel,
             campaign_name,
             sum(sessions) as sessions,
-			sum(installs) as apps_installs,
+			sum(CASE  WHEN source IN ('Facebook Ads','googleadwords_int','tiktokglobal_int') THEN 0 ELSE installs END) as apps_installs,
 			sum(rc_trial_started_users) as apps_trial_started,
 			sum(rc_trial_converted_users) as apps_trial_converted,
 			sum(rc_initial_purchase_users) as apps_initial_purchase,
@@ -29,6 +29,66 @@ WITH appsflyer_data AS (
         {% if not loop.last %}UNION ALL{% endif %}
         {% endfor %}
     ),
+
+appsflyer_skan_data AS (
+        {% for granularity in date_granularity_list %}
+        SELECT 
+            '{{granularity}}' as date_granularity,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
+			app,
+            CASE 
+                WHEN source = 'Facebook Ads' THEN 'Meta'
+                WHEN source = 'googleadwords_int' THEN 'Google Ads'
+                WHEN source = 'tiktokglobal_int' THEN 'Tiktok Ads'
+                ELSE source
+            END AS channel,
+            case when source = 'af_app_invites' then 'not set' else campaign_name end as campaign_name,
+            sum(0) as sessions,
+			sum(installs) as apps_installs,
+			sum(0) as apps_trial_started,
+			sum(0) as apps_trial_converted,
+			sum(0) as apps_initial_purchase,
+			sum(0) as apps_revenue
+        FROM {{ source('gsheet_raw','appsflyer_skan_insights') }}
+        GROUP BY 1,2,3,4,5
+        {% if not loop.last %}UNION ALL{% endif %}
+        {% endfor %}
+    ),
+
+ appsflyer_skan_total_data AS (
+        {% for granularity in date_granularity_list %}
+        SELECT 
+            '{{granularity}}' as date_granularity,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
+			app,
+            'af_app_invites' AS channel,
+            'not set' AS campaign_name,
+            sum(0) as sessions,
+			sum(-installs) as apps_installs,
+			sum(0) as apps_trial_started,
+			sum(0) as apps_trial_converted,
+			sum(0) as apps_initial_purchase,
+			sum(0) as apps_revenue
+        FROM {{ source('gsheet_raw','appsflyer_skan_insights') }}
+        GROUP BY 1,2,3,4,5
+        {% if not loop.last %}UNION ALL{% endif %}
+        {% endfor %}
+    ),
+
+final_appsflyer_data AS (
+	SELECT date_granularity, date, app, channel, campaign_name, 
+	sum(coalesce(sessions,0)) as sessions,
+	sum(coalesce(apps_installs,0)) as apps_installs,
+	sum(coalesce(apps_trial_started,0)) as apps_trial_started,
+	sum(coalesce(apps_initial_purchase,0)) as apps_initial_purchase,
+	sum(coalesce(apps_revenue,0)) as apps_revenue
+	FROM
+	(SELECT * FROM appsflyer_data
+	UNION ALL
+	SELECT * FROM appsflyer_skan_total_data
+	UNION ALL
+	SELECT * FROM final_appsflyer_data)
+	GROUP BY date_granularity, date, app, channel, campaign_name),
     
 paid_data as
     (SELECT channel, campaign_id::varchar as campaign_id, campaign_name, date::date, date_granularity, app, COALESCE(SUM(spend),0) as spend, COALESCE(SUM(clicks),0) as clicks, 
@@ -99,7 +159,7 @@ paid_appsflyer_data as (
     SUM(COALESCE(apps_initial_purchase, 0)) AS apps_initial_purchase,
     SUM(COALESCE(apps_trial_converted, 0)) AS apps_trial_converted,
     SUM(COALESCE(apps_trial_started, 0)) AS apps_trial_started
-  FROM paid_data FULL OUTER JOIN appsflyer_data USING(channel,date,date_granularity,campaign_name,app)
+  FROM paid_data FULL OUTER JOIN final_appsflyer_data USING(channel,date,date_granularity,campaign_name,app)
   GROUP BY 1,2,3,4,5,6)
     
 SELECT 
