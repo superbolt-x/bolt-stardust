@@ -85,9 +85,9 @@ final_appsflyer_data AS (
 	FROM
 	(SELECT * FROM appsflyer_data
 	UNION ALL
-	SELECT * FROM appsflyer_skan_total_data
+	SELECT * FROM appsflyer_skan_data
 	UNION ALL
-	SELECT * FROM final_appsflyer_data)
+	SELECT * FROM appsflyer_skan_total_data)
 	GROUP BY date_granularity, date, app, channel, campaign_name),
     
 paid_data as
