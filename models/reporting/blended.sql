@@ -130,7 +130,7 @@ paid_data as
             COALESCE(SUM(spend),0) as spend, 
 			COALESCE(SUM(clicks),0) as clicks, 
         	COALESCE(SUM(impressions),0) as impressions, 
-			COALESCE(SUM(skan_conversion),0) as installs, 
+			COALESCE(SUM(skan_app_install),0) as installs, 
 			COALESCE(SUM(skan_start_trial),0) as trial_started, 
 			COALESCE(SUM(0),0) as trial_converted,
 			COALESCE(SUM(0),0) as initial_purchase,
