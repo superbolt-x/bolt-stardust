@@ -7,6 +7,8 @@ sources:
   tables:
     - name: appsflyer_insights
       identifier: appsflyer_insights
+    - name: appsflyer_skan_insights
+      identifier: appsflyer_skan_insights
 
 - name: tiktok_raw
   schema: tiktok_raw
