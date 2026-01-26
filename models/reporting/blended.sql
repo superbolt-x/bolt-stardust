@@ -35,7 +35,7 @@ appsflyer_skan_data AS (
         SELECT 
             '{{granularity}}' as date_granularity,
             case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
-			app,
+			'iOS' AS app,
             CASE 
                 WHEN source = 'Facebook Ads' THEN 'Meta'
                 WHEN source = 'googleadwords_int' THEN 'Google Ads'
@@ -60,7 +60,7 @@ appsflyer_skan_data AS (
         SELECT 
             '{{granularity}}' as date_granularity,
             case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
-			app,
+			'iOS' AS app,
             'af_app_invites' AS channel,
             'not set' AS campaign_name,
             sum(0) as sessions,
