@@ -80,6 +80,7 @@ final_appsflyer_data AS (
 	sum(coalesce(sessions,0)) as sessions,
 	sum(coalesce(apps_installs,0)) as apps_installs,
 	sum(coalesce(apps_trial_started,0)) as apps_trial_started,
+	sum(coalesce(apps_trial_converted,0)) as apps_trial_converted,
 	sum(coalesce(apps_initial_purchase,0)) as apps_initial_purchase,
 	sum(coalesce(apps_revenue,0)) as apps_revenue
 	FROM
