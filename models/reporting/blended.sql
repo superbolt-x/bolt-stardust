@@ -101,6 +101,8 @@ paid_data as
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
 				when campaign_name ~* '_web_' then 'Web'
+				-- New campaign naming
+				when campaign_name ~* 'SB' then 'iOS'
 				else 'Other'
 			end as app,
 			spend, link_clicks as clicks, impressions, app_install, trial_started, trial_converted, initial_purchase, trial_converted_value, initial_purchase_value 
@@ -111,6 +113,8 @@ paid_data as
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
 				when campaign_name ~* '_web_' then 'Web'
+				-- New campaign naming
+				when campaign_name ~* 'SB' then 'iOS'
 				else 'Other'
 			end as app,
             spend, clicks, impressions, app_install, trial_started, trial_converted, initial_purchase, trial_converted_value, initial_purchase_value  
@@ -125,6 +129,8 @@ paid_data as
 				when campaign_name ~* '_ios_' then 'iOS'
 				when campaign_name ~* '_and_' then 'Android'
 				when campaign_name ~* '_web_' then 'Web'
+				-- New campaign naming
+				when campaign_name ~* 'SB' then 'iOS'
 				else 'Other'
 			end as app,
             COALESCE(SUM(spend),0) as spend, 
