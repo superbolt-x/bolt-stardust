@@ -9,7 +9,7 @@ WITH appsflyer_data AS (
         {% for granularity in date_granularity_list %}
         SELECT 
             '{{granularity}}' as date_granularity,
-            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date::date+1)-1 else date_trunc('{{granularity}}',date::date) end as date,
 			app,
             CASE 
                 WHEN source = 'Facebook Ads' THEN 'Meta'
@@ -34,7 +34,7 @@ appsflyer_skan_data AS (
         {% for granularity in date_granularity_list %}
         SELECT 
             '{{granularity}}' as date_granularity,
-            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date::date+1)-1 else date_trunc('{{granularity}}',date::date) end as date,
 			'iOS' AS app,
             CASE 
                 WHEN source = 'Facebook Ads' THEN 'Meta'
@@ -59,7 +59,7 @@ appsflyer_skan_data AS (
         {% for granularity in date_granularity_list %}
         SELECT 
             '{{granularity}}' as date_granularity,
-            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date+1)-1 else date_trunc('{{granularity}}',date) end as date,
+            case when '{{granularity}}' = 'week' then date_trunc('{{granularity}}',date::date+1)-1 else date_trunc('{{granularity}}',date::date) end as date,
 			'iOS' AS app,
             'af_app_invites' AS channel,
             'not set' AS campaign_name,
